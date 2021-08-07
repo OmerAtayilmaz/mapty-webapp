@@ -1,0 +1,26 @@
+How to plan a web project?
+1.User Story
+    -description application's functionality from the user's perspective
+
+2.Features -
+
+3.Flowchart -  What we will build
+
+4.Architecture -How we will build ->functional base, class base, clean code,MERN vs...
+
+--------------Planing step-üstteki------------------------
+
+5.Development Step
+    -implementation of our plan using code
+
+ör:
+User story:
+1. As an user, I want to log my running workouts with location, distance,time pace and steps/minute, 
+so I can keep a log of all my running.
+
+2.As an User, I want to log my cycling workouts with location,distance,time,speed and evelation gain,
+so I can keep a log of all my cycling
+3.As an User,I want to see all my workouts at a glance, so I can easily track my progress over time
+4.As an User,I want to see all my workouts on a map, so I can easily check where I work out the most
+5.As an User,I want to see all my workouts when I leave the app and come back later, so I can keep using
+there app over time.
