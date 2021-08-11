@@ -93,7 +93,7 @@ class App {
     _loadMap(position){
         
             const {latitude,longitude}=position.coords;
-            console.log(position.coords);
+
             //L->leafletten geliyor
             const coords=[latitude,longitude]
             this.#map = L.map('map').setView(coords, this.#mapZoomLevel);//2. parametre zoom miktarını belirler. 
@@ -267,7 +267,7 @@ class App {
             }
         });
         //using the public interface
-        workout.click();
+        //workout.click();
     }
 
     _setLocalStorage(){
@@ -285,7 +285,11 @@ class App {
       this.#workouts.forEach(workout=>{
         this._renderWorkout(workout)
       })
-      
+    }
+
+    reset(){
+      localStorage.removeItem('workouts')
+      location.reload();
     }
 }
 const app=new App();
