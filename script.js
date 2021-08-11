@@ -6,7 +6,8 @@
 class Workout {
     date=new Date()
     id=(Date.now()+'').slice(-10)
-    
+    clicks=0
+
     constructor(coords,distance,duration){
         this.coords=coords //[lat,lng]
         this.distance=distance //in km
@@ -17,6 +18,9 @@ class Workout {
         const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
         this.description= `${this.type[0].toUpperCase()}${this.type.slice(1)} on ${months[this.date.getMonth()]} ${this.date.getDate()}`;
 
+    }
+    click(){
+        this.clicks++;
     }
 }
 
@@ -68,11 +72,16 @@ class App {
     #map
     #mapEvent
     #workouts=[]
-
+    #mapZoomLevel=13;
     constructor(){
+        //get user's position
         this._getPosition()
+        //get data from localStorage
+        this._getlocalStorage();
+        //Attach event handlers
         form.addEventListener('submit',this._newWorkout.bind(this))//eklemezsek, thisi formdan alır!!!
         inputType.addEventListener('change',this._toggleElevationField);
+        containerWorkouts.addEventListener('click',this._moveToPopup.bind(this));
     }
 
     _getPosition(){
@@ -82,11 +91,12 @@ class App {
         );
     }
     _loadMap(position){
-        console.log(position)
+        
             const {latitude,longitude}=position.coords;
+            console.log(position.coords);
             //L->leafletten geliyor
             const coords=[latitude,longitude]
-            this.#map = L.map('map').setView(coords, 13);//2. parametre zoom miktarını belirler. 
+            this.#map = L.map('map').setView(coords, this.#mapZoomLevel);//2. parametre zoom miktarını belirler. 
             //html sayfasında map adında id'ye sahip objeye atama yapacaktır.
                         //default theme:https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
                         //hot theme: https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png             
@@ -94,6 +104,10 @@ class App {
                 attribution: "Powered By Omer Atayilmaz"
             }).addTo(this.#map);
             this.#map.on('click',this._showForm.bind(this))
+
+            this.#workouts.forEach(workout=>{
+              this._renderWorkoutMarker(workout)
+            })
     }
     _showForm(mapE){
         this.#mapEvent=mapE;
@@ -172,7 +186,7 @@ class App {
         this._hideForm();
     
         // Set local storage to all workouts
-       // this._setLocalStorage();
+        this._setLocalStorage();
       }
 
     _renderWorkoutMarker(workout) {
@@ -241,6 +255,38 @@ class App {
 
         form.insertAdjacentHTML('afterend',html);
     }
+    _moveToPopup(e){
+        const workoutEl=e.target.closest('.workout')
+        if(!workoutEl)return;
+        const workout=this.#workouts.find(work=>work.id===workoutEl.dataset.id);
+        
+        this.#map.setView(workout.coords,this.#mapZoomLevel,{
+            animate:true,
+            pan:{
+                duration:1
+            }
+        });
+        //using the public interface
+        workout.click();
+    }
+
+    _setLocalStorage(){
+      //API
+      localStorage.setItem('workouts',JSON.stringify(this.#workouts)) //stringify herşeyi string yapar! 
+    }
+    _getlocalStorage(){
+      const data= JSON.parse(localStorage.getItem('workouts'))
+      console.log(data)
+      console.log(typeof data)
+
+      if(!data)return;
+
+      this.#workouts=data;
+      this.#workouts.forEach(workout=>{
+        this._renderWorkout(workout)
+      })
+      
+    }
 }
 const app=new App();
 
@@ -264,5 +310,7 @@ tiles:döşeme,karolar
 indeed:gerçekten,gerçekten de, hakikaten
 beside:yanında,üstelik,diğer taraftan
 pace:tempo,yürüyüş
+in this case: bu durumda
 straightforward:basit,açık
+glimpse:anlık bakış, göz atmak -> first glimpse: ilk göz atma,
 */
